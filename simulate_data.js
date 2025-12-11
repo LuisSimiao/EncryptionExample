@@ -12,26 +12,21 @@ function timeGen() {
 }
 
 function generateRecord() {
-  // Choose device_id randomly from the devices array
-  const device_id = devices[Math.floor(Math.random() * devices.length)];
-  // Current timestamp in MySQL DATETIME format
-  const timestamp = timeGen();
-  // Alerts start as not acknowledged
-  const acknowledged = false;
-  // Small random string to add some extra data to the record
-  const randomExtra = Math.random().toString(36).substring(2, 15);
-  // Return the record object
-  return { device_id, timestamp, acknowledged, randomExtra };
+  const device_id = devices[Math.floor(Math.random() * devices.length)]; // Choose device_id randomly from the devices array
+  const timestamp = timeGen(); // Current timestamp in MySQL DATETIME format
+  const acknowledged = false; // Alerts start as not acknowledged
+  const randomExtra = Math.random().toString(36).substring(2, 15); // Small random string to add some extra data to the record
+  return { device_id, timestamp, acknowledged, randomExtra }; // Return the record object
 }
 
+// Build an array of `count` records using generateRecord()
 function generateMany(count = 10) {
-  // Build an array of `count` records using generateRecord()
   const out = [];
   for (let i = 0; i < count; i++) out.push(generateRecord());
   return out;
 }
 
-// Export for programmatic use
+// Export
 module.exports = { generateMany };
 
 // If run directly, print JSON to stdout

@@ -26,15 +26,28 @@ function encrypt(text) {
 
 // Decrypt string produced by encrypt()
 function decrypt(text) {
-  if (typeof text !== 'string' || !text.includes(':')) return text;
+  // Validate input format strictly and throw on malformed values so callers/tests
+  // can rely on errors instead of silently returning the original value.
+  if (typeof text !== 'string' || !text.includes(':')) {
+    throw new Error('Invalid encrypted input');
+  }
+
   const parts = text.split(':');
-  if (parts.length < 2 || parts[0].length !== IV_LENGTH * 2) return text;
+  if (parts.length < 2 || parts[0].length !== IV_LENGTH * 2) {
+    throw new Error('Invalid encrypted input');
+  }
+
   const iv = Buffer.from(parts.shift(), 'hex');
   const encryptedText = parts.join(':');
-  const decipher = crypto.createDecipheriv('aes-256-cbc', ENCRYPTION_KEY, iv);
-  let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
-  decrypted += decipher.final('utf8');
-  return decrypted;
+  try {
+    const decipher = crypto.createDecipheriv('aes-256-cbc', ENCRYPTION_KEY, iv);
+    let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    return decrypted;
+  } catch (err) {
+    // Surface a clear error for test assertions and callers.
+    throw new Error('Decryption failed');
+  }
 }
 
 module.exports = { encrypt, decrypt };
